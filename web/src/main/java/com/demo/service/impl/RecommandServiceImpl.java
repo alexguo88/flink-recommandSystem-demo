@@ -1,7 +1,6 @@
 package com.demo.service.impl;
 
-import com.demo.client.HbaseClient;
-import com.demo.client.RedisClient;
+import com.demo.util.HbaseClient;
 import com.demo.domain.ContactEntity;
 import com.demo.domain.ProductEntity;
 import com.demo.domain.ProductScoreEntity;
@@ -10,7 +9,7 @@ import com.demo.service.ContactService;
 import com.demo.service.ProductService;
 import com.demo.service.RecommandService;
 import com.demo.service.UserScoreService;
-import org.apache.hadoop.hbase.client.coprocessor.BigDecimalColumnInterpreter;
+import com.demo.util.RedisClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Service("recommandService")
 public class RecommandServiceImpl implements RecommandService {
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -41,6 +39,13 @@ public class RecommandServiceImpl implements RecommandService {
 
 	private final static int PRODUCT_LIMIT = 3;  // 相关产品数
 
+	/**
+	 * 基于用户推荐
+	 *
+	 * @param userId
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public List<ProductScoreEntity> userRecommand(String userId) throws IOException {
 		List<ProductScoreEntity> randProduct = userScoreService.getTopRankProduct(userId);
@@ -75,6 +80,11 @@ public class RecommandServiceImpl implements RecommandService {
 		return rst;
 	}
 
+	/**
+	 * 热门商品
+	 *
+	 * @return
+	 */
 	@Override
 	public List<ProductDto> recommandByHotList() {
 		// 获取top榜单
@@ -87,31 +97,48 @@ public class RecommandServiceImpl implements RecommandService {
 		return fillProductDto(topList, contactEntities, productEntities, topSize);
 	}
 
+	/**
+	 *
+	 * 协同过滤推荐（产品相似度）
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public List<ProductDto> recomandByItemCfCoeff() throws IOException {
+
+		//如果没有达到TOP_SIZE，就从数据库中取补充至TOP_SIZE
 		List<String> topList = getDefaultTop();
 		List<String> px = addRecommandProduct(topList, "px");
-		px = removeDuplicateWithOrder(px);
-		// 拿到产品详情表
-		List<ContactEntity> contactEntities = contactService.selectByIds(px);
-		// 拿到产品基本信息表
-		List<ProductEntity> productEntities = productService.selectByIds(px);
+
+		px = removeDuplicateWithOrder(px); //删除list中重复元素
+
+		List<ContactEntity> contactEntities = contactService.selectByIds(px); // 拿到产品详情表
+		List<ProductEntity> productEntities = productService.selectByIds(px); // 拿到产品基本信息表
 		return transferToDto(px, contactEntities, productEntities);
 	}
 
 
+	/**
+	 * 产品画像推荐（产品相似度）
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public List<ProductDto> recomandByProductCoeff() throws IOException {
 		List<String> topList = getDefaultTop();
 		List<String> ps = addRecommandProduct(topList, "ps");
-		ps = removeDuplicateWithOrder(ps);
-		// 拿到产品详情表
-		List<ContactEntity> contactEntities = contactService.selectByIds(ps);
-		// 拿到产品基本信息表
-		List<ProductEntity> productEntities = productService.selectByIds(ps);
+
+		ps = removeDuplicateWithOrder(ps); //删除list中重复元素
+
+		List<ContactEntity> contactEntities = contactService.selectByIds(ps); // 拿到产品详情表
+		List<ProductEntity> productEntities = productService.selectByIds(ps);// 拿到产品基本信息表
 		return transferToDto(ps, contactEntities, productEntities);
 	}
 
+
+	//-----------------------------------------------------
 
 	/**
 	 * 根据id 包装产品dto类
@@ -129,6 +156,7 @@ public class RecommandServiceImpl implements RecommandService {
 
 	/**
 	 * 查询中对应的hbase推荐表数据添加加结果集
+	 *
 	 * @param topList
 	 * @return List<String> 结果id集合
 	 */
@@ -161,7 +189,7 @@ public class RecommandServiceImpl implements RecommandService {
 	}
 
 	/**
-	 * 将
+	 * 将产品详情表（contact）和产品基本信息表（pro）合并
 	 * @param list
 	 * @param contactEntities
 	 * @param productEntities
@@ -211,6 +239,7 @@ public class RecommandServiceImpl implements RecommandService {
 
 	/**
 	 * 如果没有达到TOP_SIZE，就从数据库中取补充至TOP_SIZE
+	 *
 	 * @return
 	 */
 	private List<String> getDefaultTop() {

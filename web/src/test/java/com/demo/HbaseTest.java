@@ -1,7 +1,7 @@
 package com.demo;
 
 
-import com.demo.client.HbaseClient;
+import com.demo.util.HbaseClient;
 import com.demo.service.UserScoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

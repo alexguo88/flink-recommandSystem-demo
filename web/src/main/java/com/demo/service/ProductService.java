@@ -20,5 +20,11 @@ public interface ProductService {
      */
     List<ProductEntity> selectByIds(List<String> ids);
 
+    /**
+     *
+     *
+     * @param topSize
+     * @return
+     */
 	List<String> selectInitPro(int topSize);
 }

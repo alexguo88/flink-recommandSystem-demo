@@ -16,7 +16,6 @@ import static org.apache.hadoop.hbase.TestChoreService.log;
 
 @Service
 public class KafkaServiceImpl implements KafkaService {
-
 	private Logger log = LoggerFactory.getLogger(KafkaService.class);
 
 	@Autowired

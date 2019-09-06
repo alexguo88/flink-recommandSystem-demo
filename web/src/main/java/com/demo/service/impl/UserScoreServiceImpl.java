@@ -1,12 +1,12 @@
 package com.demo.service.impl;
 
-import com.demo.client.HbaseClient;
-import com.demo.client.RedisClient;
+import com.demo.util.HbaseClient;
 import com.demo.domain.ProductEntity;
 import com.demo.domain.ProductScoreEntity;
 import com.demo.domain.UserScoreEntity;
 import com.demo.service.ProductService;
 import com.demo.service.UserScoreService;
+import com.demo.util.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author XINZE
+ * 车联网，物联网，医院HIS，OA，商城等高端代码获取或者代码有疑问，加wx：17725354261，技术群：256860212，今日头条：大数据java架构师，公众号：前劲科技
  */
 @Service("userScoreService")
 public class UserScoreServiceImpl implements UserScoreService {

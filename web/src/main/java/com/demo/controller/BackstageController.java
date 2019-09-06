@@ -1,9 +1,9 @@
 package com.demo.controller;
 
-import com.demo.client.RedisClient;
 import com.demo.domain.ContactEntity;
 import com.demo.service.ContactService;
 import com.demo.service.ProductService;
+import com.demo.util.RedisClient;
 import com.demo.util.Result;
 import com.demo.util.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,7 @@ public class BackstageController {
 
     /**
      * 获取1小时内日志接入量
+     *
      * @return
      */
     @ResponseBody

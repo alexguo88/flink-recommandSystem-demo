@@ -1,7 +1,7 @@
 package com.demo.domain;
 
 /**
- * @author XINZE
+ *
  */
 public class LogEntity {
 

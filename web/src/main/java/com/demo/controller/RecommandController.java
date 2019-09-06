@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 推荐页面逻辑
+ */
 @Controller
 public class RecommandController {
 
@@ -23,36 +26,45 @@ public class RecommandController {
 
     @Autowired
     KafkaService kafkaService;
+
     /**
      * 返回推荐页面
+     *
      * @param userId
      * @return
      * @throws IOException
      */
     @GetMapping("/recommand")
-    public String recommandByUserId(@RequestParam("userId") String userId,
-                                    Model model) throws IOException {
+    public String recommandByUserId(@RequestParam("userId") String userId, Model model) throws IOException {
 
         // 拿到不同推荐方案的结果
-        List<ProductDto> hotList = recommandService.recommandByHotList();
-        List<ProductDto> itemCfCoeffList = recommandService.recomandByItemCfCoeff();
-        List<ProductDto> productCoeffList = recommandService.recomandByProductCoeff();
+        List<ProductDto> hotList = recommandService.recommandByHotList(); //热门商品
+        List<ProductDto> itemCfCoeffList = recommandService.recomandByItemCfCoeff(); //协同过滤推荐结果
+        List<ProductDto> productCoeffList = recommandService.recomandByProductCoeff(); //产品画像推荐结果
 
         // 将结果返回给前端
         model.addAttribute("userId", userId);
-        model.addAttribute("hotList",hotList);
+
+        model.addAttribute("hotList", hotList);
         model.addAttribute("itemCfCoeffList", itemCfCoeffList);
         model.addAttribute("productCoeffList", productCoeffList);
+
+
 
         return "user";
     }
 
+    /**
+     * 发送kafka日志
+     *
+     * @param userId
+     * @param productId
+     * @param action
+     * @return
+     */
     @GetMapping("/log")
     @ResponseBody
-    public Result logToKafka(@RequestParam("id") String userId,
-                             @RequestParam("prod") String productId,
-                             @RequestParam("action") String action){
-
+    public Result logToKafka(@RequestParam("id") String userId, @RequestParam("prod") String productId, @RequestParam("action") String action) {
         String log = kafkaService.makeLog(userId, productId, action);
         kafkaService.send(null, log);
         return ResultUtils.success();

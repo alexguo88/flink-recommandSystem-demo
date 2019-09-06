@@ -19,6 +19,8 @@ public interface RecommandService {
      */
     List<ProductScoreEntity> userRecommand(String userId) throws IOException;
 
+
+
     /**
      * 热度榜数据
      */
