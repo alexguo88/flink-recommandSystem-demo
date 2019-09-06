@@ -8,7 +8,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 /**
  *
  */
-public class UserHistoryMapFunction implements MapFunction<String, String> {
+public class HistoryMapFunction implements MapFunction<String, String> {
 
     /**
      * 将 用户-产品  和 产品-用户 分别存储Hbase表
